@@ -13,10 +13,10 @@ void addInput(int (&ary)[], int &counter);// Will add inputs from the line
 void addFile(int (&ary)[], int &counter);//will add inputs from a file
 void sort(int (&ary)[], int index);//will add the inputs
 void print(int ary[], int counter, int level, int index);//will print the inputs
-int remove(int (&ary)[], int index, int &counter);//will remove the root and print it
+void remove(int (&ary)[], int index, int &counter);//will remove the root and print it
 void removeAll(int (&ary)[], int index, int &counter);//will remove all values
 void arrayNuller(int (&ary)[], int &size);//Makes all elements in an array null
-void reverseSort(int (&ary)[], int index);//called during remove which must go through tree in reverse
+void reverseSort(int (&ary)[], int index, int counter);//called during remove which must go through tree in reverse
 
 int main() {//main funtion
   char input[20];
@@ -41,10 +41,10 @@ int main() {//main funtion
     }
      if(strcmp(input, "removeAll") == 0) {
        removeAll(ary, index, counter);
-      counter = 0;
+       counter = 0;
     }
      if(strcmp(input, "remove") == 0) {
-       cout << remove(ary, index, counter) << endl;
+       remove(ary, index, counter);
     }
 
     if(strcmp(input, "quit") == 0) {
@@ -107,44 +107,43 @@ void print(int ary[], int counter, int level, int index) {//will print the tree
   if (index >= counter) {
     return;
   }
-  print(ary, counter, level + 1, 2 * index + 1);
+  print(ary, counter, level + 1, 2 * index + 2);
 
   for(int i = 0; i < level; i++) {
     cout << "\t";
   }
   cout << ary[index] << endl;
-  print(ary, counter, level + 1, 2 * index + 2);
+  print(ary, counter, level + 1, 2 * index + 1);
 }
 
-int remove(int (&ary)[], int index, int &counter) {//removes the root
+void remove(int (&ary)[], int index, int &counter) {//removes the root
   int temp = ary[0];
-  ary[0] = ary[counter];
-  ary[counter] = 0;
+  ary[0] = ary[counter - 1];
+  ary[counter -1 ] = 0;
   counter = counter - 1;
-  reverseSort(ary, index);
-  return temp;
+  reverseSort(ary, index, counter);
+  cout << temp << endl;
 }
 
 void removeAll(int (&ary)[], int index,int &counter) {//will remove all elements in the heap
   int i = 0;
-  while(i < counter) {
+  while(counter > 0) {
     remove(ary,index,counter);
-    i++;
   }
 }
 
-void reverseSort(int (&ary)[], int index) {//called during remove. Will sort through the list top to bottom.
+void reverseSort(int (&ary)[], int index, int counter) {//called during remove. Will sort through the list top to bottom.
   int rChild = (index * 2 + 1);
   int lChild = (index * 2 + 2);
   int largest = index;
-  if (ary[rChild] > ary[largest]) {
+  if (lChild < counter && ary[rChild] > ary[largest]) {
     largest = rChild;
   }
-  if(ary[lChild] > ary[largest]) {
+  if(rChild < counter && ary[lChild] > ary[largest]) {
     largest = lChild;
   }
   if(largest != index) {
     swap(ary[index], ary[largest]);
-    reverseSort(ary, largest);
+    reverseSort(ary, largest,counter);
   }
 }
